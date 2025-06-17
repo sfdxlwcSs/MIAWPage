@@ -17,8 +17,11 @@
         var Request_Type = " ";
         var Subject = "";
         var Employee_Identifier = "";
-        var RecordTypeId = "01209000001pXkkAAE";
-        var JWTToken = ''
+        var recordTypeId = "01209000001pXkkAAE";
+        var JWTToken = '';
+        var certificateName = 'miaw11040026';
+        var issuer = 'doverHROCDevSFDC';
+        var endPoint = 'https://dover2--miaw.sandbox.my.salesforce.com';
 
         async function fetchTokenAndJWT() {
             try {
@@ -31,7 +34,7 @@
                 } else {
                     console.log("User cancelled the prompt.");
                 }
-                const tokenUrl = 'https://dover2--miaw.sandbox.my.salesforce.com/services/oauth2/token';
+                const tokenUrl = endPoint+'/services/oauth2/token';
                 const client_id = '3MVG9jc2comIGIyyvJcS4aqOCuHKkWT40PTUV5aZUwXKXjkYCVHP24AKvCmPqXqFarJeKTGi7ybiDO0P.5Zst';
                 const client_secret = '9BC10D74A947C86AA75A5E1C6727CB4EFE06188B9D80D9F49B53B5345067ECB4';
                 const grant_type = 'client_credentials';
@@ -61,10 +64,10 @@
                 console.log('Access token received:', accessToken);
 
                 const jwtParams = new URLSearchParams();
-                jwtParams.append('issuer', 'doverHROCDevSFDC');
-                jwtParams.append('certificateName', 'miaw11040026');
+                jwtParams.append('issuer', issuer);
+                jwtParams.append('certificateName', certificateName);
 
-                const jwtUrl = `https://dover2--miaw.sandbox.my.salesforce.com/services/apexrest/generateJWT/${Employee_Identifier}?${jwtParams.toString()}`;
+                const jwtUrl =`${endPoint}/services/apexrest/generateJWT/${Employee_Identifier}?${jwtParams.toString()}`;
 
                 console.log('Sending JWT request...');
                 const jwtResponse = await fetch(jwtUrl, {
@@ -117,7 +120,7 @@
             // Set invisible prechat field
             embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
                 "Employee_Identifier": Employee_Identifier,
-                "RecordTypeId": RecordTypeId
+                "RecordTypeId": recordTypeId
             });
 
             // Send your identity token to Salesforce
