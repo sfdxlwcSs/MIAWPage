@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salesforce OAuth2 Token</title>
+    <title>Health And Wellness Portal</title>
 </head>
+
 <body onload="fetchTokenAndJWT()">
-    <h1>Get Salesforce Access Token and JWT</h1>
+    <h1>Health And Wellness Portal</h1>
     <p id="tokenDisplay"></p>
     <p id="jwtDisplay"></p>
     <script type='text/javascript'>
@@ -14,13 +16,21 @@
         var Sub_Reason = " ";
         var Request_Type = " ";
         var Subject = "";
-        var Employee_Identifier = "11040026";
+        var Employee_Identifier = "";
         var RecordTypeId = "01209000001pXkkAAE";
-		var JWTToken =''
+        var JWTToken = ''
 
         async function fetchTokenAndJWT() {
             try {
-		
+
+                let empNo = prompt("Please enter your Employee Number:");
+
+                if (empNo !== null) {
+                    console.log("Hello, " + empNo + "!");
+                    Employee_Identifier=empNo;
+                } else {
+                    console.log("User cancelled the prompt.");
+                }
                 const tokenUrl = 'https://dover2--miaw.sandbox.my.salesforce.com/services/oauth2/token';
                 const client_id = '3MVG9jc2comIGIyyvJcS4aqOCuHKkWT40PTUV5aZUwXKXjkYCVHP24AKvCmPqXqFarJeKTGi7ybiDO0P.5Zst';
                 const client_secret = '9BC10D74A947C86AA75A5E1C6727CB4EFE06188B9D80D9F49B53B5345067ECB4';
@@ -101,32 +111,22 @@
         window.addEventListener("onEmbeddedMessagingReady", e => {
             // Log event
             console.log("onEmbeddedMessagingReady event triggered");
-            
+
             // Set visible prechat field
-            
+
             // Set invisible prechat field
             embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
-                "Employee_Identifier": Employee_Identifier, 
+                "Employee_Identifier": Employee_Identifier,
                 "RecordTypeId": RecordTypeId
             });
-		embeddedservice_bootstrap.userVerificationAPI
-                .clearSession(true)
-                .then(() => {
-                    console.log('User session cleared and logged out.');
-                })
-                .catch((error) => {
-                    console.error('Error clearing session:', error);
-                });
-        
+
             // Send your identity token to Salesforce
             console.log('Setting identity token:', JWTToken);
-        setTimeout(function() {
             embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
                 identityTokenType: "JWT",
                 identityToken: JWTToken
             });
-        }, 5000);
-        }); // <-- Add this closing brace for the previous event listener
+        });
 
         window.addEventListener("onEmbeddedMessagingIdentityTokenExpired", () => {
             console.log("Received the onEmbeddedMessagingIdentityTokenExpired event.");
@@ -142,6 +142,8 @@
                 });
         });
     </script>
-    <script type='text/javascript' src='https://dover2--miaw.sandbox.my.site.com/ESWMIAWSimpleQueue1739211929740/assets/js/bootstrap.min.js'></script>
+    <script type='text/javascript'
+        src='https://dover2--miaw.sandbox.my.site.com/ESWMIAWSimpleQueue1739211929740/assets/js/bootstrap.min.js'></script>
 </body>
+
 </html>
