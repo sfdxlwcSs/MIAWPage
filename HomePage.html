@@ -35,7 +35,7 @@
                 const client_id = '3MVG9jc2comIGIyyvJcS4aqOCuHKkWT40PTUV5aZUwXKXjkYCVHP24AKvCmPqXqFarJeKTGi7ybiDO0P.5Zst';
                 const client_secret = '9BC10D74A947C86AA75A5E1C6727CB4EFE06188B9D80D9F49B53B5345067ECB4';
                 const grant_type = 'client_credentials';
-                const EmployeeId = '11042532';
+               
 
                 const params = new URLSearchParams();
                 params.append('client_id', client_id);
@@ -64,7 +64,7 @@
                 jwtParams.append('issuer', 'doverHROCDevSFDC');
                 jwtParams.append('certificateName', 'miaw11040026');
 
-                const jwtUrl = `https://dover2--miaw.sandbox.my.salesforce.com/services/apexrest/generateJWT/${EmployeeId}?${jwtParams.toString()}`;
+                const jwtUrl = `https://dover2--miaw.sandbox.my.salesforce.com/services/apexrest/generateJWT/${Employee_Identifier}?${jwtParams.toString()}`;
 
                 console.log('Sending JWT request...');
                 const jwtResponse = await fetch(jwtUrl, {
