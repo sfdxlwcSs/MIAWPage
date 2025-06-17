@@ -122,10 +122,23 @@
 
             // Send your identity token to Salesforce
             console.log('Setting identity token:', JWTToken);
-            embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
+           /* embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
                 identityTokenType: "JWT",
                 identityToken: JWTToken
-            });
+            });*/
+            embeddedservice_bootstrap.userVerificationAPI.clearSession(true)
+    .then(() => {
+        console.log('User session cleared and logged out.');
+        // Set the identity token after clearing the session
+        embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
+            identityTokenType: "JWT",
+            identityToken: JWTToken
+        });
+    })
+    .catch((error) => {
+        console.error('Error clearing session:', error);
+    });
+
         });
 
         window.addEventListener("onEmbeddedMessagingIdentityTokenExpired", () => {
