@@ -126,7 +126,7 @@
                 identityToken: JWTToken
             });
         }, 5000);
-           
+        }); // <-- Add this closing brace for the previous event listener
 
         window.addEventListener("onEmbeddedMessagingIdentityTokenExpired", () => {
             console.log("Received the onEmbeddedMessagingIdentityTokenExpired event.");
