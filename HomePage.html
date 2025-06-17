@@ -120,12 +120,12 @@
         
             // Send your identity token to Salesforce
             console.log('Setting identity token:', JWTToken);
-		setTimeout( embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
+        setTimeout(function() {
+            embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
                 identityTokenType: "JWT",
                 identityToken: JWTToken
             });
-        })
-		, 5000);
+        }, 5000);
            
 
         window.addEventListener("onEmbeddedMessagingIdentityTokenExpired", () => {
