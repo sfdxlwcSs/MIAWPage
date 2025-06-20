@@ -121,39 +121,40 @@
         }
 
         window.addEventListener("onEmbeddedMessagingReady", (e) => {
+
             // Log event
             console.log("onEmbeddedMessagingReady event triggered");
 
             // Set visible prechat field
 
+            /*   embeddedservice_bootstrap.prechatAPI.setVisiblePrechatFields({
+                   Request_Reason: Request_Reason,
+                   Sub_Reason: Sub_Reason,
+                   Request_Type: Request_Type,
+                   Subject: Subject,
+                   Employee_Identifier: Employee_Identifier,
+               });*/
+
             // Set invisible prechat field
+
             embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
                 Employee_Identifier: Employee_Identifier,
                 RecordTypeId: recordTypeId,
             });
 
             // Send your identity token to Salesforce
-            console.log("Setting identity token:", JWTToken);
-            // Only setting the UserVerification
-            /* embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
-                     identityTokenType: "JWT",
-                     identityToken: JWTToken
-                 });*/
-            //Clears the userVerification and then sets th JWT Token
-            embeddedservice_bootstrap.userVerificationAPI
-                .clearSession(true)
-                .then(() => {
-                    console.log("User session cleared and logged out.");
-                    // Set the identity token after clearing the session
-                    embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
-                        identityTokenType: "JWT",
-                        identityToken: JWTToken,
-                    });
-                })
-                .catch((error) => {
-                    console.error("Error clearing session:", error);
-                });
-        });
+            console.log("Setting identity token:");
+            // Send your identity token to Salesforce
+            embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
+                identityTokenType: "JWT",
+                identityToken: JWTToken
+
+            });
+
+        }); // end of onEmbeddedMessagingReady event listener
+
+
+
 
         window.addEventListener("onEmbeddedMessagingIdentityTokenExpired", () => {
             console.log(
@@ -169,7 +170,9 @@
                 .catch((error) => {
                     console.error("Error clearing session:", error);
                 });
-        });
+        }); // end of onEmbeddedMessagingIdentityTokenExpired event listener
+
+
     </script>
     <script type="text/javascript"
         src="https://dover2--miaw.sandbox.my.site.com/ESWMIAWSimpleQueue1739211929740/assets/js/bootstrap.min.js"></script>
