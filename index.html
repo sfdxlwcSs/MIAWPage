@@ -23,7 +23,6 @@
         var issuer = "doverHROCDevSFDC";
         var endPoint = "https://dover2--miaw.sandbox.my.salesforce.com";
 
-
         function isValidNumericInput(inputString) {
             const regex = /^\d{8}$/;
             return regex.test(inputString);
@@ -35,17 +34,14 @@
                 if (empNo !== null && isValidNumericInput(empNo)) {
                     console.log("Hello, " + empNo + "!");
                     Employee_Identifier = empNo;
-                }
-                else {
-                    console.log("User cancelled the prompt.or invalid input");
+                } else {
+                    console.log("User cancelled the prompt or invalid input");
                     return;
                 }
 
                 const tokenUrl = endPoint + "/services/oauth2/token";
-                const client_id =
-                    "3MVG9jc2comIGIyyvJcS4aqOCuHKkWT40PTUV5aZUwXKXjkYCVHP24AKvCmPqXqFarJeKTGi7ybiDO0P.5Zst";
-                const client_secret =
-                    "9BC10D74A947C86AA75A5E1C6727CB4EFE06188B9D80D9F49B53B5345067ECB4";
+                const client_id = "3MVG9jc2comIGIyyvJcS4aqOCuHKkWT40PTUV5aZUwXKXjkYCVHP24AKvCmPqXqFarJeKTGi7ybiDO0P.5Zst";
+                const client_secret = "9BC10D74A947C86AA75A5E1C6727CB4EFE06188B9D80D9F49B53B5345067ECB4";
                 const grant_type = "client_credentials";
 
                 const params = new URLSearchParams();
@@ -68,9 +64,7 @@
 
                 const tokenData = await tokenResponse.json();
                 const accessToken = tokenData.access_token;
-                document.getElementById(
-                    "tokenDisplay"
-                ).innerText = `Access Token: ${accessToken}`;
+                document.getElementById("tokenDisplay").innerText = `Access Token: ${accessToken}`;
                 console.log("Access token received:", accessToken);
 
                 const jwtParams = new URLSearchParams();
@@ -105,10 +99,8 @@
                     ". Thank you for your understanding."
                 );
 
-                document.getElementById("tokenDisplay").innerText =
-                    "Error fetching token";
-                document.getElementById("jwtDisplay").innerText =
-                    "Error fetching JWT";
+                document.getElementById("tokenDisplay").innerText = "Error fetching token";
+                document.getElementById("jwtDisplay").innerText = "Error fetching JWT";
             }
         }
 
@@ -148,24 +140,21 @@
                 identityTokenType: "JWT",
                 identityToken: JWTToken
             });
+        });
 
+        window.addEventListener("onEmbeddedMessagingIdentityTokenExpired", () => {
+            console.log("Received the onEmbeddedMessagingIdentityTokenExpired event.");
 
-
-            window.addEventListener("onEmbeddedMessagingIdentityTokenExpired", () => {
-                console.log(
-                    "Received the onEmbeddedMessagingIdentityTokenExpired event."
-                );
-
-                // Refresh the identity token and send it to Salesforce.
-                embeddedservice_bootstrap.userVerificationAPI
-                    .clearSession(true)
-                    .then(() => {
-                        console.log("User session cleared and logged out.");
-                    })
-                    .catch((error) => {
-                        console.error("Error clearing session:", error);
-                    });
-            });
+            // Refresh the identity token and send it to Salesforce.
+            embeddedservice_bootstrap.userVerificationAPI
+                .clearSession(true)
+                .then(() => {
+                    console.log("User session cleared and logged out.");
+                })
+                .catch((error) => {
+                    console.error("Error clearing session:", error);
+                });
+        });
     </script>
     <script type="text/javascript"
         src="https://dover2--miaw.sandbox.my.site.com/ESWMIAWSimpleQueue1739211929740/assets/js/bootstrap.min.js"></script>
