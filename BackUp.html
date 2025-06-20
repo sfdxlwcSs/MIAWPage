@@ -43,11 +43,33 @@
     }
 
 
+    async function checkIfSessionToBeCleared(employeeId) {
+      // Check if the employee ID is already stored in session storage
+      const storedEmployeeId = getEmployeeId();
+      if (storedEmployeeId) {
+
+        if (storedEmployeeId === employeeId) {
+
+          console.log("Stored Employee ID matches the provided Employee ID.");
+
+        } else {
+          // If the stored employee ID does not match, clear the session
+          console.log("Stored Employee ID does not match the provided Employee ID. Clearing session.");
+          await clearUserSession();
+
+        }
+
+      }
+    }
+
+
     async function fetchTokenAndJWT() {
       try {
         let empNo = prompt("Please enter your Employee Number:");
 
         if (empNo !== null && isValidNumericInput(empNo)) {
+          await checkIfSessionToBeCleared(empNo);
+
           saveEmployeeId(empNo); // Save employee ID in session storage
           Employee_Identifier = empNo;
         } else {
@@ -176,23 +198,25 @@
     }); // end of onEmbeddedMessagingReady event listener
 
 
+    async function clearUserSession() {
+      try {
+        await embeddedservice_bootstrap.userVerificationAPI.clearSession(true);
+        console.log("User session cleared and logged out.");
+      } catch (error) {
+        console.error("Error clearing session:", error);
+      }
+    }
 
-
-    window.addEventListener("onEmbeddedMessagingIdentityTokenExpired", () => {
+    window.addEventListener("onEmbeddedMessagingIdentityTokenExpired", async () => {
       console.log(
         "Received the onEmbeddedMessagingIdentityTokenExpired event."
       );
 
-      // Refresh the identity token and send it to Salesforce.
-      embeddedservice_bootstrap.userVerificationAPI
-        .clearSession(true)
-        .then(() => {
-          console.log("User session cleared and logged out.");
-        })
-        .catch((error) => {
-          console.error("Error clearing session:", error);
-        });
+      await clearUserSession();
     }); // end of onEmbeddedMessagingIdentityTokenExpired event listener
+
+
+
 
 
   </script>
