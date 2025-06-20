@@ -94,7 +94,7 @@
               Employee_Identifier +
               ". Thank you for your understanding."
           );
-          console.error("Error:", error);
+          console.error("Error➡️➡️🚀🚀", JSON.stringify(error));
           document.getElementById("tokenDisplay").innerText =
             "Error fetching token";
           document.getElementById("jwtDisplay").innerText =
@@ -134,24 +134,12 @@
         // Send your identity token to Salesforce
         console.log("Setting identity token:", JWTToken);
         // Only setting the UserVerification
-        embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
-          identityTokenType: "JWT",
-          identityToken: JWTToken,
-        });
-        //Clears the userVerification and then sets th JWT Token
-        /* embeddedservice_bootstrap.userVerificationAPI.clearSession(true)
-                .then(() => {
-                    console.log('User session cleared and logged out.');
-                    // Set the identity token after clearing the session
-                    embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
-                        identityTokenType: "JWT",
-                        identityToken: JWTToken
-                    });
-                })
-                .catch((error) => {
-                    console.error('Error clearing session:', error);
-                });*/
-      });
+         embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
+                 identityTokenType: "JWT",
+                 identityToken: JWTToken
+             });
+
+
 
       window.addEventListener("onEmbeddedMessagingIdentityTokenExpired", () => {
         console.log(
