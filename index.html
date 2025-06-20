@@ -23,12 +23,8 @@
         var issuer = "doverHROCDevSFDC";
         var endPoint = "https://dover2--miaw.sandbox.my.salesforce.com";
 
-
-
-
         async function fetchTokenAndJWT() {
             try {
-
                 let empNo = prompt("Please enter your Employee Number:");
 
                 if (empNo !== null) {
@@ -94,20 +90,16 @@
 
                 initEmbeddedMessaging();
             } catch (error) {
-
                 alert(
                     "Chat support is currently unavailable. As your employee record is not available in myDover System. Please contact Administration for assistance with your Employee Number -" +
                     Employee_Identifier +
                     ". Thank you for your understanding."
                 );
-
-                // Display error messages in the HTML elements  
+                console.error("Error:", JSON.stringify);
                 document.getElementById("tokenDisplay").innerText =
                     "Error fetching token";
-                document.getElementById("jwtDisplay").innerText = error.message;
-                // Optionally, you can log the error to the console for debugging
-
-
+                document.getElementById("jwtDisplay").innerText =
+                    "Error fetching JWT";
             }
         }
 
@@ -143,28 +135,40 @@
             // Send your identity token to Salesforce
             console.log("Setting identity token:", JWTToken);
             // Only setting the UserVerification
-            embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
-                identityTokenType: "JWT",
-                identityToken: JWTToken
-            });
-
-
-
-            window.addEventListener("onEmbeddedMessagingIdentityTokenExpired", () => {
-                console.log(
-                    "Received the onEmbeddedMessagingIdentityTokenExpired event."
-                );
-
-                // Refresh the identity token and send it to Salesforce.
-                embeddedservice_bootstrap.userVerificationAPI
-                    .clearSession(true)
-                    .then(() => {
-                        console.log("User session cleared and logged out.");
-                    })
-                    .catch((error) => {
-                        console.error("Error clearing session:", error);
+            /* embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
+                     identityTokenType: "JWT",
+                     identityToken: JWTToken
+                 });*/
+            //Clears the userVerification and then sets th JWT Token
+            embeddedservice_bootstrap.userVerificationAPI
+                .clearSession(true)
+                .then(() => {
+                    console.log("User session cleared and logged out.");
+                    // Set the identity token after clearing the session
+                    embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
+                        identityTokenType: "JWT",
+                        identityToken: JWTToken,
                     });
-            });
+                })
+                .catch((error) => {
+                    console.error("Error clearing session:", error);
+                });
+        });
+
+        window.addEventListener("onEmbeddedMessagingIdentityTokenExpired", () => {
+            console.log(
+                "Received the onEmbeddedMessagingIdentityTokenExpired event."
+            );
+
+            // Refresh the identity token and send it to Salesforce.
+            embeddedservice_bootstrap.userVerificationAPI
+                .clearSession(true)
+                .then(() => {
+                    console.log("User session cleared and logged out.");
+                })
+                .catch((error) => {
+                    console.error("Error clearing session:", error);
+                });
         });
     </script>
     <script type="text/javascript"
