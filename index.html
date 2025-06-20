@@ -39,7 +39,7 @@
                     Employee_Identifier = empNo;
                 } else {
                     console.log("User cancelled the prompt or invalid Input.");
-                    document.getElementById("jwtDisplay").innerTexT = 'Please enter a valid Employee Number (8 digits).';
+                    document.getElementById("jwtDisplay").innerText = 'Please enter a valid Employee Number (8 digits).';
                     return;
                 }
                 const tokenUrl = endPoint + "/services/oauth2/token";
