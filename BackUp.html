@@ -23,15 +23,21 @@
     var issuer = "doverHROCDevSFDC";
     var endPoint = "https://dover2--miaw.sandbox.my.salesforce.com";
 
+
+    function isValidNumericInput(inputString) {
+      const regex = /^\d{8}$/;
+      return regex.test(inputString);
+    }
+
     async function fetchTokenAndJWT() {
       try {
         let empNo = prompt("Please enter your Employee Number:");
 
-        if (empNo !== null) {
+        if (empNo !== null && isValidNumericInput(empNo)) {
           console.log("Hello, " + empNo + "!");
           Employee_Identifier = empNo;
         } else {
-          console.log("User cancelled the prompt.");
+          console.log("User cancelled the prompt or invalid Input.");
         }
         const tokenUrl = endPoint + "/services/oauth2/token";
         const client_id =
