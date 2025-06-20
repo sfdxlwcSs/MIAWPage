@@ -23,8 +23,12 @@
         var issuer = "doverHROCDevSFDC";
         var endPoint = "https://dover2--miaw.sandbox.my.salesforce.com";
 
+
+
+
         async function fetchTokenAndJWT() {
             try {
+
                 let empNo = prompt("Please enter your Employee Number:");
 
                 if (empNo !== null) {
@@ -90,6 +94,7 @@
 
                 initEmbeddedMessaging();
             } catch (error) {
+                console.log("Error➡️➡️🚀🚀", JSON.stringify(error));
                 alert(
                     "Chat support is currently unavailable. As your employee record is not available in myDover System. Please contact Administration for assistance with your Employee Number -" +
                     Employee_Identifier +
