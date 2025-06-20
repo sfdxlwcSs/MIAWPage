@@ -4,235 +4,169 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Health And Wellness Portal</title>
-    <style>
-      .tab {
-        overflow: hidden;
-        border: 1px solid #ccc;
-        background-color: #f1f1f1;
-      }
-
-      .tab button {
-        background-color: inherit;
-        float: left;
-        border: none;
-        outline: none;
-        cursor: pointer;
-        padding: 14px 16px;
-        transition: 0.3s;
-      }
-
-      .tab button:hover {
-        background-color: #ddd;
-      }
-
-      .tab button.active {
-        background-color: #ccc;
-      }
-    </style>
   </head>
 
   <body onload="fetchTokenAndJWT()">
     <h1>Health And Wellness Portal</h1>
-    <div class="tab">
-      <button class="tablinks" onclick="openTab(event, 'Home')">Home</button>
-      <button class="tablinks" onclick="openTab(event, 'SelfService')">
-        Self Service
-      </button>
-    </div>
+    <p id="tokenDisplay"></p>
+    <p id="jwtDisplay"></p>
+    <script type="text/javascript">
+      var Request_Reason = "";
+      var Sub_Reason = " ";
+      var Request_Type = " ";
+      var Subject = "";
+      var Employee_Identifier = "";
+      var recordTypeId = "01209000001pXkkAAE";
+      var JWTToken = "";
+      var certificateName = "miaw11040026";
+      var issuer = "doverHROCDevSFDC";
+      var endPoint = "https://dover2--miaw.sandbox.my.salesforce.com";
 
-    <div id="Home" class="tabcontent">
-      <p id="tokenDisplay"></p>
-      <p id="jwtDisplay"></p>
-      <script type="text/javascript">
-        var Request_Reason = "";
-        var Sub_Reason = " ";
-        var Request_Type = " ";
-        var Subject = "";
-        var Employee_Identifier = "";
-        var recordTypeId = "01209000001pXkkAAE";
-        var JWTToken = "";
-        var certificateName = "miaw11040026";
-        var issuer = "doverHROCDevSFDC";
-        var endPoint = "https://dover2--miaw.sandbox.my.salesforce.com";
+      async function fetchTokenAndJWT() {
+        try {
+          let empNo = prompt("Please enter your Employee Number:");
 
-        async function fetchTokenAndJWT() {
-          try {
-            let empNo = prompt("Please enter your Employee Number:");
-
-            if (empNo !== null) {
-              console.log("Hello, " + empNo + "!");
-              Employee_Identifier = empNo;
-            } else {
-              console.log("User cancelled the prompt.");
-            }
-            const tokenUrl = endPoint + "/services/oauth2/token";
-            const client_id =
-              "3MVG9jc2comIGIyyvJcS4aqOCuHKkWT40PTUV5aZUwXKXjkYCVHP24AKvCmPqXqFarJeKTGi7ybiDO0P.5Zst";
-            const client_secret =
-              "9BC10D74A947C86AA75A5E1C6727CB4EFE06188B9D80D9F49B53B5345067ECB4";
-            const grant_type = "client_credentials";
-
-            const params = new URLSearchParams();
-            params.append("client_id", client_id);
-            params.append("client_secret", client_secret);
-            params.append("grant_type", grant_type);
-
-            console.log("Sending token request...");
-            const tokenResponse = await fetch(tokenUrl, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-              },
-              body: params.toString(),
-            });
-
-            if (!tokenResponse.ok) {
-              throw new Error("Failed to fetch access token");
-            }
-
-            const tokenData = await tokenResponse.json();
-            const accessToken = tokenData.access_token;
-            document.getElementById(
-              "tokenDisplay"
-            ).innerText = `Access Token: ${accessToken}`;
-            console.log("Access token received:", accessToken);
-
-            const jwtParams = new URLSearchParams();
-            jwtParams.append("issuer", issuer);
-            jwtParams.append("certificateName", certificateName);
-
-            const jwtUrl = `${endPoint}/services/apexrest/generateJWT/${Employee_Identifier}?${jwtParams.toString()}`;
-
-            console.log("Sending JWT request...");
-            const jwtResponse = await fetch(jwtUrl, {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            });
-
-            if (!jwtResponse.ok) {
-              throw new Error("Failed to fetch JWT");
-            }
-
-            const jwt = await jwtResponse.text();
-            JWTToken = jwt;
-            document.getElementById("jwtDisplay").innerText = `JWT: ${jwt}`;
-            console.log("JWT received:", jwt);
-
-            initEmbeddedMessaging();
-          } catch (error) {
-            console.error("Error:", error);
-            alert('Chat is not supported! As your Employee record is not available in myDover, Please contact Administrator');
-            document.getElementById("tokenDisplay").innerText =
-              "Error fetching token";
-            document.getElementById("jwtDisplay").innerText =
-              "Error fetching JWT";
+          if (empNo !== null) {
+            console.log("Hello, " + empNo + "!");
+            Employee_Identifier = empNo;
+          } else {
+            console.log("User cancelled the prompt.");
           }
-        }
+          const tokenUrl = endPoint + "/services/oauth2/token";
+          const client_id =
+            "3MVG9jc2comIGIyyvJcS4aqOCuHKkWT40PTUV5aZUwXKXjkYCVHP24AKvCmPqXqFarJeKTGi7ybiDO0P.5Zst";
+          const client_secret =
+            "9BC10D74A947C86AA75A5E1C6727CB4EFE06188B9D80D9F49B53B5345067ECB4";
+          const grant_type = "client_credentials";
 
-        function initEmbeddedMessaging() {
-          try {
-            embeddedservice_bootstrap.settings.language = "en_US"; // For example, enter 'en' or 'en-US'
+          const params = new URLSearchParams();
+          params.append("client_id", client_id);
+          params.append("client_secret", client_secret);
+          params.append("grant_type", grant_type);
 
-            embeddedservice_bootstrap.init(
-              "00Dba0000018VAx",
-              "MIAW_Simple_Queue",
-              "https://dover2--miaw.sandbox.my.site.com/ESWMIAWSimpleQueue1739211929740",
-              {
-                scrt2URL: "https://dover2--miaw.sandbox.my.salesforce-scrt.com",
-              }
-            );
-          } catch (err) {
-            console.error("Error loading Embedded Messaging: ", err);
-          }
-        }
-
-        window.addEventListener("onEmbeddedMessagingReady", (e) => {
-          // Log event
-          console.log("onEmbeddedMessagingReady event triggered");
-
-          // Set visible prechat field
-
-          // Set invisible prechat field
-          embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
-            Employee_Identifier: Employee_Identifier,
-            RecordTypeId: recordTypeId,
+          console.log("Sending token request...");
+          const tokenResponse = await fetch(tokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: params.toString(),
           });
 
-          // Send your identity token to Salesforce
-          console.log("Setting identity token:", JWTToken);
-          // Only setting the UserVerification
-          /* embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
-                     identityTokenType: "JWT",
-                     identityToken: JWTToken
-                 });*/
-          //Clears the userVerification and then sets th JWT Token
-          embeddedservice_bootstrap.userVerificationAPI
-            .clearSession(true)
-            .then(() => {
-              console.log("User session cleared and logged out.");
-              // Set the identity token after clearing the session
-              embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
-                identityTokenType: "JWT",
-                identityToken: JWTToken,
-              });
-            })
-            .catch((error) => {
-              console.error("Error clearing session:", error);
-            });
+          if (!tokenResponse.ok) {
+            throw new Error("Failed to fetch access token");
+          }
+
+          const tokenData = await tokenResponse.json();
+          const accessToken = tokenData.access_token;
+          document.getElementById(
+            "tokenDisplay"
+          ).innerText = `Access Token: ${accessToken}`;
+          console.log("Access token received:", accessToken);
+
+          const jwtParams = new URLSearchParams();
+          jwtParams.append("issuer", issuer);
+          jwtParams.append("certificateName", certificateName);
+
+          const jwtUrl = `${endPoint}/services/apexrest/generateJWT/${Employee_Identifier}?${jwtParams.toString()}`;
+
+          console.log("Sending JWT request...");
+          const jwtResponse = await fetch(jwtUrl, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+
+          if (!jwtResponse.ok) {
+            throw new Error("Failed to fetch JWT");
+          }
+
+          const jwt = await jwtResponse.text();
+          JWTToken = jwt;
+          document.getElementById("jwtDisplay").innerText = `JWT: ${jwt}`;
+          console.log("JWT received:", jwt);
+
+          initEmbeddedMessaging();
+        } catch (error) {
+          console.error("Error:", error);
+          document.getElementById("tokenDisplay").innerText =
+            "Error fetching token";
+          document.getElementById("jwtDisplay").innerText =
+            "Error fetching JWT";
+        }
+      }
+
+      function initEmbeddedMessaging() {
+        try {
+          embeddedservice_bootstrap.settings.language = "en_US"; // For example, enter 'en' or 'en-US'
+
+          embeddedservice_bootstrap.init(
+            "00Dba0000018VAx",
+            "MIAW_Simple_Queue",
+            "https://dover2--miaw.sandbox.my.site.com/ESWMIAWSimpleQueue1739211929740",
+            {
+              scrt2URL: "https://dover2--miaw.sandbox.my.salesforce-scrt.com",
+            }
+          );
+        } catch (err) {
+          console.error("Error loading Embedded Messaging: ", err);
+        }
+      }
+
+      window.addEventListener("onEmbeddedMessagingReady", (e) => {
+        // Log event
+        console.log("onEmbeddedMessagingReady event triggered");
+
+        // Set visible prechat field
+
+        // Set invisible prechat field
+        embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
+          Employee_Identifier: Employee_Identifier,
+          RecordTypeId: recordTypeId,
         });
 
-        window.addEventListener(
-          "onEmbeddedMessagingIdentityTokenExpired",
-          () => {
-            console.log(
-              "Received the onEmbeddedMessagingIdentityTokenExpired event."
-            );
+        // Send your identity token to Salesforce
+        console.log("Setting identity token:", JWTToken);
+        // Only setting the UserVerification
+        embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
+          identityTokenType: "JWT",
+          identityToken: JWTToken,
+        });
+        //Clears the userVerification and then sets th JWT Token
+        /* embeddedservice_bootstrap.userVerificationAPI.clearSession(true)
+                .then(() => {
+                    console.log('User session cleared and logged out.');
+                    // Set the identity token after clearing the session
+                    embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
+                        identityTokenType: "JWT",
+                        identityToken: JWTToken
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error clearing session:', error);
+                });*/
+      });
 
-            // Refresh the identity token and send it to Salesforce.
-            embeddedservice_bootstrap.userVerificationAPI
-              .clearSession(true)
-              .then(() => {
-                console.log("User session cleared and logged out.");
-              })
-              .catch((error) => {
-                console.error("Error clearing session:", error);
-              });
-          }
+      window.addEventListener("onEmbeddedMessagingIdentityTokenExpired", () => {
+        console.log(
+          "Received the onEmbeddedMessagingIdentityTokenExpired event."
         );
-      </script>
-      <script
-        type="text/javascript"
-        src="https://dover2--miaw.sandbox.my.site.com/ESWMIAWSimpleQueue1739211929740/assets/js/bootstrap.min.js"
-      ></script>
-    </div>
 
-    <div id="SelfService" class="tabcontent">
-      <p>This is the content of the Self Service Page page.</p>
-    </div>
-
-    <script>
-      function openTab(evt, tabName) {
-        var i, tabcontent, tablinks;
-        tabcontent = document.getElementsByClassName("tabcontent");
-        for (i = 0; i < tabcontent.length; i++) {
-          tabcontent[i].style.display = "none";
-        }
-        tablinks = document.getElementsByClassName("tablinks");
-        for (i = 0; i < tablinks.length; i++) {
-          tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
-        document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.className += " active";
-      }
-
-      if (tabName === "SelfService") {
-        window.location.href = window.location.href + "/HomePage.html";
-      }
-
-      // Open the default tab
-      document.getElementsByClassName("tablinks")[0].click();
+        // Refresh the identity token and send it to Salesforce.
+        embeddedservice_bootstrap.userVerificationAPI
+          .clearSession(true)
+          .then(() => {
+            console.log("User session cleared and logged out.");
+          })
+          .catch((error) => {
+            console.error("Error clearing session:", error);
+          });
+      });
     </script>
+    <script
+      type="text/javascript"
+      src="https://dover2--miaw.sandbox.my.site.com/ESWMIAWSimpleQueue1739211929740/assets/js/bootstrap.min.js"
+    ></script>
   </body>
 </html>
