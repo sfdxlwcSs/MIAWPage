@@ -23,15 +23,24 @@
         var issuer = "doverHROCDevSFDC";
         var endPoint = "https://dover2--miaw.sandbox.my.salesforce.com";
 
+
+        function isValidNumericInput(inputString) {
+            const regex = /^\d{8}$/; // Regular expression to match exactly 8 digits
+            // This regex checks if the input consists of exactly 8 digits (0-9).
+            return regex.test(inputString);
+        }
+
         async function fetchTokenAndJWT() {
             try {
                 let empNo = prompt("Please enter your Employee Number:");
 
-                if (empNo !== null) {
+                if (empNo !== null && isValidNumericInput(empNo)) {
                     console.log("Hello, " + empNo + "!");
                     Employee_Identifier = empNo;
                 } else {
-                    console.log("User cancelled the prompt.");
+                    console.log("User cancelled the prompt or invalid Input.");
+                    document.getElementById("jwtDisplay").innerTexT = 'Please enter a valid Employee Number (8 digits).';
+                    return;
                 }
                 const tokenUrl = endPoint + "/services/oauth2/token";
                 const client_id =
@@ -95,7 +104,7 @@
                     Employee_Identifier +
                     ". Thank you for your understanding."
                 );
-                console.error("Error:", JSON.stringify);
+
                 document.getElementById("tokenDisplay").innerText =
                     "Error fetching token";
                 document.getElementById("jwtDisplay").innerText =
