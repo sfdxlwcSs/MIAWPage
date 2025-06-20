@@ -30,12 +30,25 @@
       return regex.test(inputString);
     }
 
+
+    // Function to save employee ID in session storage
+    function saveEmployeeId(employeeId) {
+      sessionStorage.setItem('employeeId', employeeId);
+      console.log('Employee ID saved in session storage:', employeeId);
+    }
+
+    // Function to retrieve employee ID from session storage
+    function getEmployeeId() {
+      return sessionStorage.getItem('employeeId');
+    }
+
+
     async function fetchTokenAndJWT() {
       try {
         let empNo = prompt("Please enter your Employee Number:");
 
         if (empNo !== null && isValidNumericInput(empNo)) {
-          console.log("Hello, " + empNo + "!");
+          saveEmployeeId(empNo); // Save employee ID in session storage
           Employee_Identifier = empNo;
         } else {
           console.log("User cancelled the prompt or invalid Input.");
