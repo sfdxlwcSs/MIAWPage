@@ -35,11 +35,9 @@
                 if (empNo !== null && isValidNumericInput(empNo)) {
                     console.log("Hello, " + empNo + "!");
                     Employee_Identifier = empNo;
-                } else if (empNo !== null) {
-                    alert("Please enter a valid 8-digit Employee Number.");
-                    return;
-                } else {
-                    console.log("User cancelled the prompt.");
+                }
+                else {
+                    console.log("User cancelled the prompt.or invalid input");
                     return;
                 }
 
