@@ -25,7 +25,8 @@
 
 
     function isValidNumericInput(inputString) {
-      const regex = /^\d{8}$/;
+      const regex = /^\d{8}$/; // Regular expression to match exactly 8 digits
+      // This regex checks if the input consists of exactly 8 digits (0-9).
       return regex.test(inputString);
     }
 
@@ -38,6 +39,7 @@
           Employee_Identifier = empNo;
         } else {
           console.log("User cancelled the prompt or invalid Input.");
+          return;
         }
         const tokenUrl = endPoint + "/services/oauth2/token";
         const client_id =
@@ -101,7 +103,7 @@
           Employee_Identifier +
           ". Thank you for your understanding."
         );
-        console.error("Error:", JSON.stringify);
+        console.log("Error:", JSON.stringify(error));
         document.getElementById("tokenDisplay").innerText =
           "Error fetching token";
         document.getElementById("jwtDisplay").innerText =
