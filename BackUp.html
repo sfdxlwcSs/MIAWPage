@@ -55,7 +55,7 @@
         } else {
           // If the stored employee ID does not match, clear the session
           console.log("Stored Employee ID does not match the provided Employee ID. Clearing session.");
-          await clearUserSession();
+          clearUserSession();
 
         }
 
@@ -198,13 +198,11 @@
     }); // end of onEmbeddedMessagingReady event listener
 
 
-    async function clearUserSession() {
-      try {
-        await embeddedservice_bootstrap.userVerificationAPI.clearSession(true);
-        console.log("User session cleared and logged out.");
-      } catch (error) {
-        console.error("Error clearing session:", error);
-      }
+    function clearUserSession() {
+
+      embeddedservice_bootstrap.userVerificationAPI.clearSession(true);
+      console.log("User session cleared and logged out.");
+
     }
 
     window.addEventListener("onEmbeddedMessagingIdentityTokenExpired", async () => {
@@ -212,7 +210,7 @@
         "Received the onEmbeddedMessagingIdentityTokenExpired event."
       );
 
-      await clearUserSession();
+      clearUserSession();
     }); // end of onEmbeddedMessagingIdentityTokenExpired event listener
 
 
