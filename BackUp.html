@@ -12,12 +12,8 @@
   <p id="tokenDisplay"></p>
   <p id="jwtDisplay"></p>
   <script type="text/javascript">
-    var Request_Reason = "";
-    var Sub_Reason = " ";
-    var Request_Type = " ";
-    var Subject = "";
-    var Employee_Identifier = "";
-    var recordTypeId = "01209000001pXkkAAE";
+
+    var EmployeeNumber = "";
     var JWTToken = "";
     var certificateName = "miaw11040026";
     var issuer = "doverHROCDevSFDC";
@@ -71,7 +67,7 @@
           await checkIfSessionToBeCleared(empNo);
 
           saveEmployeeId(empNo); // Save employee ID in session storage
-          Employee_Identifier = empNo;
+          EmployeeNumber = empNo;
         } else {
           console.log("User cancelled the prompt or invalid Input.");
           document.getElementById("jwtDisplay").innerText = 'Please enter a valid Employee Number (8 digits).';
@@ -113,7 +109,7 @@
         jwtParams.append("issuer", issuer);
         jwtParams.append("certificateName", certificateName);
 
-        const jwtUrl = `${endPoint}/services/apexrest/generateJWT/${Employee_Identifier}?${jwtParams.toString()}`;
+        const jwtUrl = `${endPoint}/services/apexrest/generateJWT/${EmployeeNumber}?${jwtParams.toString()}`;
 
         console.log("Sending JWT request...");
         const jwtResponse = await fetch(jwtUrl, {
@@ -136,7 +132,7 @@
       } catch (error) {
         alert(
           "Chat support is currently unavailable. As your employee record is not available in myDover System. Please contact Administration for assistance with your Employee Number -" +
-          Employee_Identifier +
+          EmployeeNumber +
           ". Thank you for your understanding."
         );
 
@@ -176,14 +172,14 @@
              Sub_Reason: Sub_Reason,
              Request_Type: Request_Type,
              Subject: Subject,
-             Employee_Identifier: Employee_Identifier,
+             EmployeeNumber: EmployeeNumber,
          });*/
 
       // Set invisible prechat field
 
       embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
-        Employee_Identifier: Employee_Identifier,
-        RecordTypeId: recordTypeId,
+        EmployeeNumber: EmployeeNumber
+
       });
 
       // Send your identity token to Salesforce
