@@ -11,6 +11,8 @@
     <h1>Health And Wellness Portal</h1>
     <p id="tokenDisplay"></p>
     <p id="jwtDisplay"></p>
+    <button label="Logout" onclick="clearUserSession()" style=" float:right; background: tomato;">Logout</button>
+ 
     <script type="text/javascript">
 
         var EmployeeNumber = "";
@@ -124,6 +126,27 @@
                 console.error("Error loading Embedded Messaging: ", err);
             }
         }
+        //This method is used to clear the existing session after the user logs out
+        function clearUserSession() {
+
+      embeddedservice_bootstrap.userVerificationAPI
+        .clearSession(true)
+        .then(() => {
+          // Add actions to run after the session is cleared successfully.
+          console.log("User session cleared successfully.");
+        })
+        .catch((error) => {
+          
+          // Add actions to run after clearing the session fails.
+        })
+        .finally(() => {
+          location.reload();
+          // Add actions to run whether the chat client launches
+          // successfully or not.
+        });
+
+
+    }
 
         window.addEventListener("onEmbeddedMessagingReady", (e) => {
 
