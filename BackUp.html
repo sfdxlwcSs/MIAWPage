@@ -65,7 +65,7 @@
         let empNo = prompt("Please enter your Employee Number:");
 
         if (empNo !== null && isValidNumericInput(empNo)) {
-          await checkIfSessionToBeCleared(empNo);
+         /* await checkIfSessionToBeCleared(empNo);*/
 
           saveEmployeeId(empNo); // Save employee ID in session storage
           EmployeeNumber = empNo;
