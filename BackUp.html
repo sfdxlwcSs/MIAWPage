@@ -208,6 +208,7 @@
           // Add actions to run after clearing the session fails.
         })
         .finally(() => {
+          location.reload();
           // Add actions to run whether the chat client launches
           // successfully or not.
         });
