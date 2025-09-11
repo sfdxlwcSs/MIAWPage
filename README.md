@@ -6,11 +6,17 @@ High-level Steps to Embed Salesforce Messaging
 
 
 Ensure that Salesforce Messaging is correctly set up .
+
 Embed Messaging Code on External Website
+
 Retrieve and embed the Salesforce Messaging code on an external website .
+
 Resolve CORS Error
+
 Fix the “No Access-Control-Allow-Origin header” error by adding the external site to the CORS allow list in Salesforce.
+
 Resolve CSP Error
+
 Address the “Refused to frame” error by adding the external site as a Trusted Domain for inline frames in Salesforce.
-Launch Salesforce Messaging
-After resolving both errors, successfully launch Salesforce Messaging .
+
+Launch Salesforce Messaging.After resolving both errors, successfully launch Salesforce Messaging .
