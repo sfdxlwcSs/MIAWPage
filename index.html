@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-   
     <title>Health And Wellness Portal</title>
 </head>
 
@@ -12,38 +11,52 @@
     <h1>Health And Wellness Portal</h1>
     <p id="tokenDisplay"></p>
     <p id="jwtDisplay"></p>
-    <button label="Logout" onclick="clearUserSession()" style=" float:right; background: tomato;">Logout</button>
- 
-    <script type="text/javascript">
+    <button label="Logout" onclick="clearUserSession()" style="float:right; background: tomato;">Logout</button>
 
+    <script type="text/javascript">
         var EmployeeNumber = "";
         var JWTToken = "";
         var certificateName = "miaw11040026";
         var issuer = "doverHROCDevSFDC";
         var endPoint = "https://dover2--miaw.sandbox.my.salesforce.com";
 
-
+        /**
+         * Checks if the input string consists of exactly 8 digits.
+         */
         function isValidNumericInput(inputString) {
             const regex = /^\d{8}$/; // Regular expression to match exactly 8 digits
-            // This regex checks if the input consists of exactly 8 digits (0-9).
             return regex.test(inputString);
         }
 
+        /**
+         * [NEW] Prompts the user for an Employee Number and validates it.
+         * @throws {Error} - Throws a specific error if the user cancels or enters invalid input.
+         * @returns {string} - The validated 8-digit employee number.
+         */
+        function getAndValidateEmployeeNumber() {
+            const empNo = prompt("Please enter your Employee Number:");
+
+            if (empNo === null) {
+                throw new Error("User cancelled the prompt or null.");
+            }
+
+            if (!isValidNumericInput(empNo)) {
+                throw new Error("Please enter a valid Employee Number (8 for Prod 9 For Dev digits).");
+            }
+            return empNo;
+        }
+
+
         async function fetchTokenAndJWT() {
             try {
-                let empNo = prompt("Please enter your Employee Number:");
+                // [MODIFIED] Use the new function to get and validate input.
+                // It will throw an error if invalid, which the catch block will handle.
+                EmployeeNumber = getAndValidateEmployeeNumber();
+                console.log("Hello, " + EmployeeNumber + "!");
 
-                if (empNo !== null && isValidNumericInput(empNo)) {
-                    console.log("Hello, " + empNo + "!");
-                    EmployeeNumber = empNo;
-                } else {
-                    console.log("User cancelled the prompt or invalid Input.");
-                    document.getElementById("jwtDisplay").innerText = 'Please enter a valid Employee Number (8 digits).';
-                    return;
-                }
                 const tokenUrl = endPoint + "/services/oauth2/token";
                 //Connected App Name
-                 //MIAW Access Token HnW in MIAW org runnning as myDoverAPIUser no certificate attached
+                //MIAW Access Token HnW in MIAW org runnning as myDoverAPIUser no certificate attached
                 const client_id =
                     "3MVG9jc2comIGIyyvJcS4aqOCuHKkWT40PTUV5aZUwXKXjkYCVHP24AKvCmPqXqFarJeKTGi7ybiDO0P.5Zst";
                 const client_secret =
@@ -90,7 +103,7 @@
                 });
 
                 if (!jwtResponse.ok) {
-                    throw new Error("Failed to fetch JWT");
+                    throw new Error("Failed to fetch JWT. The employee number may not be valid in the system.");
                 }
 
                 const jwt = await jwtResponse.text();
@@ -99,17 +112,24 @@
                 console.log("JWT received:", jwt);
 
                 initEmbeddedMessaging();
-            } catch (error) {
-                alert(
-                    "Chat support is currently unavailable. As your employee record is not available in myDover System. Please contact Administration for assistance with your Employee Number -" +
-                    EmployeeNumber +
-                    ". Thank you for your understanding."
-                );
 
-                document.getElementById("tokenDisplay").innerText =
-                    "Error fetching token";
-                document.getElementById("jwtDisplay").innerText =
-                    "Error fetching JWT";
+            } catch (error) {
+                // [MODIFIED] Smarter catch block to handle different errors.
+                console.error("An error occurred:", error.message);
+
+                // Check for specific input validation errors first.
+                if (error.message.includes("User cancelled") || error.message.includes("valid Employee Number")) {
+                    document.getElementById("jwtDisplay").innerText = error.message;
+                } else {
+                    // For all other errors (network, failed fetch, etc.), show the generic alert.
+                    alert(
+                        "Chat support is currently unavailable. As your employee record is not available in myDover System. Please contact Administration for assistance with your Employee Number -" +
+                        EmployeeNumber +
+                        ". Thank you for your understanding."
+                    );
+                    document.getElementById("tokenDisplay").innerText = "Error";
+                    document.getElementById("jwtDisplay").innerText = "Could not initialize session. " + error.message;
+                }
             }
         }
 
@@ -120,8 +140,7 @@
                 embeddedservice_bootstrap.init(
                     "00Dba0000018VAx",
                     "MIAW_Simple_Queue",
-                    "https://dover2--miaw.sandbox.my.site.com/ESWMIAWSimpleQueue1739211929740",
-                    {
+                    "https://dover2--miaw.sandbox.my.site.com/ESWMIAWSimpleQueue1739211929740", {
                         scrt2URL: "https://dover2--miaw.sandbox.my.salesforce-scrt.com",
                     }
                 );
@@ -132,60 +151,43 @@
         //This method is used to clear the existing session after the user logs out
         function clearUserSession() {
 
-      embeddedservice_bootstrap.userVerificationAPI
-        .clearSession(true)
-        .then(() => {
-          // Add actions to run after the session is cleared successfully.
-          console.log("User session cleared successfully.");
-        })
-        .catch((error) => {
-          
-          // Add actions to run after clearing the session fails.
-        })
-        .finally(() => {
-          location.reload();
-          // Add actions to run whether the chat client launches
-          // successfully or not.
-        });
+            embeddedservice_bootstrap.userVerificationAPI
+                .clearSession(true)
+                .then(() => {
+                    // Add actions to run after the session is cleared successfully.
+                    console.log("User session cleared successfully.");
+                })
+                .catch((error) => {
+
+                    // Add actions to run after clearing the session fails.
+                })
+                .finally(() => {
+                    location.reload();
+                    // Add actions to run whether the chat client launches
+                    // successfully or not.
+                });
 
 
-    }
+        }
 
         window.addEventListener("onEmbeddedMessagingReady", (e) => {
 
             // Log event
             console.log("onEmbeddedMessagingReady event triggered");
 
-            // Set visible prechat field
-
-            /*   embeddedservice_bootstrap.prechatAPI.setVisiblePrechatFields({
-                   Request_Reason: Request_Reason,
-                   Sub_Reason: Sub_Reason,
-                   Request_Type: Request_Type,
-                   Subject: Subject,
-                   EmployeeNumber: EmployeeNumber,
-               });*/
-
-            // Set invisible prechat field
-
+            // Set hidden prechat field
             embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
                 EmployeeNumber: EmployeeNumber
-
             });
 
             // Send your identity token to Salesforce
             console.log("Setting identity token:");
-            // Send your identity token to Salesforce
             embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
                 identityTokenType: "JWT",
                 identityToken: JWTToken
-
             });
 
         }); // end of onEmbeddedMessagingReady event listener
-
-
-
 
         window.addEventListener("onEmbeddedMessagingIdentityTokenExpired", () => {
             console.log(
@@ -202,11 +204,8 @@
                     console.error("Error clearing session:", error);
                 });
         }); // end of onEmbeddedMessagingIdentityTokenExpired event listener
-
-
     </script>
-    <script type="text/javascript"
-        src="https://dover2--miaw.sandbox.my.site.com/ESWMIAWSimpleQueue1739211929740/assets/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://dover2--miaw.sandbox.my.site.com/ESWMIAWSimpleQueue1739211929740/assets/js/bootstrap.min.js"></script>
 </body>
 
 </html>
