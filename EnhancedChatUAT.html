@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Health And Wellness Portal</title>
+</head>
+
+<body onload="fetchTokenAndJWT()">
+  <h1>Health And Wellness Portal</h1>
+  <p id="tokenDisplay"></p>
+  <p id="jwtDisplay"></p>
+  <button label="Logout" onclick="clearUserSession()" style=" margin-left: 25%;margin-right: 25%;width: 35%;background: tomato;font-size: xxx-large;">Logout</button>
+  <script type="text/javascript">
+
+    var EmployeeNumber = "";
+    var JWTToken = "";
+    var certificateName = "EnhancedChat";
+    var issuer = "EnhancedChatmyDoverUAT";
+    var endPoint = "https://dover2--uat.sandbox.my.salesforce.com";
+
+
+    function isValidNumericInput(inputString) {
+      const regex = /^\d{8}$/; // Regular expression to match exactly 8 digits
+      // This regex checks if the input consists of exactly 8 digits (0-9).
+      return regex.test(inputString);
+    }
+
+
+    // Function to save employee ID in session storage
+    function saveEmployeeId(employeeId) {
+      sessionStorage.setItem('employeeId', employeeId);
+      console.log('Employee ID saved in session storage:', employeeId);
+    }
+
+    // Function to retrieve employee ID from session storage
+    function getEmployeeId() {
+      return sessionStorage.getItem('employeeId');
+    }
+
+
+    async function checkIfSessionToBeCleared(employeeId) {
+      // Check if the employee ID is already stored in session storage
+      const storedEmployeeId = getEmployeeId();
+      if (storedEmployeeId) {
+
+        if (storedEmployeeId === employeeId) {
+
+          console.log("Stored Employee ID matches the provided Employee ID.");
+
+        } else {
+          // If the stored employee ID does not match, clear the session
+          console.log("Stored Employee ID does not match the provided Employee ID. Clearing session.");
+          clearUserSession();
+
+        }
+
+      }
+    }
+
+
+    async function fetchTokenAndJWT() {
+      try {
+        let empNo = prompt("Please enter your Employee Number:");
+
+        if (empNo !== null && isValidNumericInput(empNo)) {
+         /* await checkIfSessionToBeCleared(empNo);*/
+
+          saveEmployeeId(empNo); // Save employee ID in session storage
+          EmployeeNumber = empNo;
+        } else {
+          console.log("User cancelled the prompt or invalid Input.");
+          document.getElementById("jwtDisplay").innerText = 'Please enter a valid Employee Number (8 digits).';
+          return;
+        }
+        const tokenUrl = endPoint + "/services/oauth2/token";
+        const client_id =
+          "3MVG9Lu3LaaTCEgI33D_B_joSTixURXqJVAqVzknX5wobE14iIYYBBVAE11CRkQPa27zHv1mibw==";
+        const client_secret =
+          "95D3B42C8B181058CD80B30AC62C95C99CB5612C426670FC093F4F9F0F65D077";
+        const grant_type = "client_credentials";
+
+        const params = new URLSearchParams();
+        params.append("client_id", client_id);
+        params.append("client_secret", client_secret);
+        params.append("grant_type", grant_type);
+
+        console.log("Sending token request...");
+        const tokenResponse = await fetch(tokenUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: params.toString(),
+        });
+
+        if (!tokenResponse.ok) {
+          throw new Error("Failed to fetch access token");
+        }
+
+        const tokenData = await tokenResponse.json();
+        const accessToken = tokenData.access_token;
+        document.getElementById(
+          "tokenDisplay"
+        ).innerText = `Access Token: ${accessToken}`;
+        console.log("Access token received:", accessToken);
+
+        const jwtParams = new URLSearchParams();
+        jwtParams.append("issuer", issuer);
+        jwtParams.append("certificateName", certificateName);
+
+        const jwtUrl = `${endPoint}/services/apexrest/generateJWT/${EmployeeNumber}?${jwtParams.toString()}`;
+
+        console.log("Sending JWT request...");
+        const jwtResponse = await fetch(jwtUrl, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        if (!jwtResponse.ok) {
+          throw new Error("Failed to fetch JWT");
+        }
+
+        const jwt = await jwtResponse.text();
+        JWTToken = jwt;
+        document.getElementById("jwtDisplay").innerText = `JWT: ${jwt}`;
+        console.log("JWT received:", jwt);
+
+        initEmbeddedMessaging();
+      } catch (error) {
+        alert(
+          "Chat support is currently unavailable. As your employee record is not available in myDover System. Please contact Administration for assistance with your Employee Number -" +
+          EmployeeNumber +
+          ". Thank you for your understanding."
+        );
+
+        document.getElementById("tokenDisplay").innerText =
+          "Error fetching token";
+        document.getElementById("jwtDisplay").innerText =
+          "Error fetching JWT";
+      }
+    }
+
+    function initEmbeddedMessaging() {
+      try {
+        embeddedservice_bootstrap.settings.language = "en_US"; // For example, enter 'en' or 'en-US'
+
+        embeddedservice_bootstrap.init(
+				'00D3N0000008n5f',
+				'Enhanced_Chat',
+				'https://dover2--uat.sandbox.my.site.com/ESWEnhancedChat1762334397076',
+				{
+					scrt2URL: 'https://dover2--uat.sandbox.my.salesforce-scrt.com'
+				}
+			);
+      } catch (err) {
+        console.error("Error loading Embedded Messaging: ", err);
+      }
+    }
+
+    window.addEventListener("onEmbeddedMessagingReady", (e) => {
+
+      // Log event
+      console.log("onEmbeddedMessagingReady event triggered");
+
+      // Set visible prechat field
+
+      /*   embeddedservice_bootstrap.prechatAPI.setVisiblePrechatFields({
+             Request_Reason: Request_Reason,
+             Sub_Reason: Sub_Reason,
+             Request_Type: Request_Type,
+             Subject: Subject,
+             EmployeeNumber: EmployeeNumber,
+         });*/
+
+      // Set invisible prechat field
+
+      embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
+        EmployeeNumber: EmployeeNumber
+
+      });
+
+      // Send your identity token to Salesforce
+      console.log("Setting identity token:");
+      // Send your identity token to Salesforce
+      embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
+        identityTokenType: "JWT",
+        identityToken: JWTToken
+
+      });
+
+    }); // end of onEmbeddedMessagingReady event listener
+
+
+    function clearUserSession() {
+
+      embeddedservice_bootstrap.userVerificationAPI
+        .clearSession(true)
+        .then(() => {
+          // Add actions to run after the session is cleared successfully.
+          console.log("User session cleared successfully.");
+        })
+        .catch((error) => {
+          debugger;
+          // Add actions to run after clearing the session fails.
+        })
+        .finally(() => {
+          location.reload();
+          // Add actions to run whether the chat client launches
+          // successfully or not.
+        });
+
+
+    }
+
+    window.addEventListener("onEmbeddedMessagingIdentityTokenExpired", async () => {
+      console.log(
+        "Received the onEmbeddedMessagingIdentityTokenExpired event."
+      );
+
+      clearUserSession();
+    }); // end of onEmbeddedMessagingIdentityTokenExpired event listener
+
+
+
+
+
+  </script>
+  <script type='text/javascript' src='https://dover2--uat.sandbox.my.site.com/ESWEnhancedChat1762334397076/assets/js/bootstrap.min.js' ></script>
+
+</body>
+
+</html>
