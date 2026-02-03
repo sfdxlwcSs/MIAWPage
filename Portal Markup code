@@ -1,0 +1,62 @@
+<script>
+
+      // JWT Token Received
+    window.addEventListener('accessTokenRecieved', (event) => {
+        const token = event.detail.data;
+        embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
+            identityTokenType: "JWT",
+            identityToken: token
+        });
+    });
+    
+    let fname, lname, email, userId, persona;
+
+    // Capture logged-in user info from authTokenMIAW
+    window.addEventListener('loggedInUserPreChatData', function (e) {
+        console.log("User info received");
+
+        fname = e.detail.fname;
+        lname = e.detail.lname;
+        email = e.detail.email;
+        userId = e.detail.userId;
+        persona = e.detail.persona;
+
+        console.log('User First Name:', fname);
+    });
+
+    // Embedded Messaging Ready
+    window.addEventListener("onEmbeddedMessagingReady", () => {
+        console.log('onEmbeddedMessagingReady');
+        console.log('User Id myDoverPortal:', userId);
+
+        // Set hidden fields
+        embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
+            "UserId": userId //let UserId = $A.get('$SObjectType.CurrentUser.Id'); 
+        });
+
+        // Set visible fields
+        embeddedservice_bootstrap.prechatAPI.setVisiblePrechatFields({
+            "_firstName": { "value": fname, "isEditableByEndUser": true },
+            "_lastName": { "value": lname, "isEditableByEndUser": true },
+            "_email": { "value": email, "isEditableByEndUser": true },
+            "Persona": { "value": persona, "isEditableByEndUser": true }
+        });
+    });
+
+    // Identity Token Refresh
+    window.addEventListener("onEmbeddedMessagingIdentityTokenExpired", () => {
+        console.log("Identity token expired");
+    });
+
+    // Trigger chat launch from your Chat With Agent Button
+    window.addEventListener('customchatloaded', () => {
+        launchChat();
+    });
+
+    function launchChat() {
+        embeddedservice_bootstrap.utilAPI.launchChat()
+            .then(() => console.log('Successfully launched Messaging'))
+            .catch(() => console.log('Error launching Messaging'))
+            .finally(() => console.log('Launch attempt finished'));
+    }
+</script>
