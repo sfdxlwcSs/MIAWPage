@@ -190,8 +190,8 @@ debugger;
                 const entryPayloadObj = JSON.parse(objEntryPayload);
                 const result = entryPayloadObj?.abstractMessage?.staticContent?.text;
             const titleText =     payload?.abstractMessage?.staticContent?.title?.title || null;
-const title ='Please share your feedback on this chat.'
-              //  console.log('result -->', result);
+const title ='Please share your feedback on this chat.';
+              
                 const optOutKeywords = ['end', 'stop'];
 
                 if (title.includes(titleText)) {
