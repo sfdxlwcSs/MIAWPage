@@ -194,7 +194,7 @@ const title ='Please share your feedback on this chat.';
               
                 const optOutKeywords = ['end', 'stop'];
 
-                if (title.includes(titleText)) {
+                if (titleText.includes(title)) {
                     embeddedservice_bootstrap.userVerificationAPI
                         .clearSession()
                         .then(() => {
