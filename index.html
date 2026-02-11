@@ -185,15 +185,16 @@
         let objEntryPayload = conversationEntry.entryPayload;
         console.log('objEntryPayload =>', JSON.stringify(objEntryPayload));
 debugger;
-        if (strRole === 'EndUser' && objEntryPayload) {
+        if (strRole === 'System' && objEntryPayload) {
             try {
                 const entryPayloadObj = JSON.parse(objEntryPayload);
                 const result = entryPayloadObj?.abstractMessage?.staticContent?.text;
-
+            const titleText =     payload?.abstractMessage?.staticContent?.title?.title || null;
+const title ='Please share your feedback on this chat.'
                 console.log('result -->', result);
                 const optOutKeywords = ['end', 'stop'];
 
-                if (optOutKeywords.includes(result.toLowerCase())) {
+                if (title.includes(titleText)) {
                     embeddedservice_bootstrap.userVerificationAPI
                         .clearSession()
                         .then(() => {
