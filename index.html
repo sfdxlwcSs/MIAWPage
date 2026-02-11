@@ -170,6 +170,51 @@
 
         }
 
+        window.addEventListener("onEmbeddedMessageSent", (event) => {
+    console.log("START:: Message Sent");
+
+    const tempContent = event.detail;
+    const {
+        conversationEntry
+    } = tempContent;
+    console.log('conversationEntry -->', JSON.stringify(conversationEntry));
+
+    if (conversationEntry?.sender?.role && conversationEntry.entryPayload) {
+        let strRole = conversationEntry.sender.role;
+        console.log('strRole =>', strRole);
+        let objEntryPayload = conversationEntry.entryPayload;
+        console.log('objEntryPayload =>', JSON.stringify(objEntryPayload));
+debugger;
+        if (strRole === 'EndUser' && objEntryPayload) {
+            try {
+                const entryPayloadObj = JSON.parse(objEntryPayload);
+                const result = entryPayloadObj?.abstractMessage?.staticContent?.text;
+
+                console.log('result -->', result);
+                const optOutKeywords = ['end', 'stop'];
+
+                if (optOutKeywords.includes(result.toLowerCase())) {
+                    embeddedservice_bootstrap.userVerificationAPI
+                        .clearSession()
+                        .then(() => {
+                            console.log("Session cleared successfully.");
+                        })
+                        .catch((error) => {
+                            console.error("Error clearing session:", error);
+                        })
+                        .finally(() => {
+                            console.log("clearSession finally.");
+                            window.alert("You have opted out of Chat!!!");
+                        });
+                }
+            } catch (e) {
+                console.error("Failed to parse entryPayload:", e);
+            }
+        }
+    }
+    console.log("END:: Message Sent");
+});
+
         window.addEventListener("onEmbeddedMessagingReady", (e) => {
 
             // Log event
