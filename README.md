@@ -20,3 +20,5 @@ Resolve CSP Error
 Address the “Refused to frame” error by adding the external site as a Trusted Domain for inline frames in Salesforce.
 
 Launch Salesforce Messaging.After resolving both errors, successfully launch Salesforce Messaging .
+
+ClearSession.txt -- This is the Code snippet which clears the Users session.
