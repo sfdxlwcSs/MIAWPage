@@ -1,0 +1,36 @@
+window.addEventListener("onEmbeddedMessageSent", (event) => {
+    const tempContent = event.detail;
+    const { conversationEntry } = tempContent;
+    console.log('conversationEntry -->', JSON.stringify(conversationEntry));
+
+    if (conversationEntry?.sender?.role && conversationEntry.entryPayload) {
+        let strRole = conversationEntry.sender.role;
+        let objEntryPayload = conversationEntry.entryPayload;
+        console.log('objEntryPayload =>', JSON.stringify(objEntryPayload));
+        if (strRole === 'System' && objEntryPayload) {
+            try {
+                const entryPayloadObj = JSON.parse(objEntryPayload);
+
+                const titleText = entryPayloadObj?.abstractMessage?.staticContent?.title?.title || null;
+                const title = 'Please share your feedback on this chat.';
+                if (titleText && titleText.includes(title)) {
+                    setTimeout(() => {
+                        embeddedservice_bootstrap.userVerificationAPI
+                            .clearSession(true)
+                            .then(() => {
+                                console.log("Session cleared successfully.");
+                            })
+                            .catch((error) => {
+                                console.error("Error clearing session:", error);
+                            })
+                            .finally(() => {
+                                console.log("clearSession finally.");
+                            });
+                    }, 30000); 
+                }
+            } catch (e) {
+                console.error("Failed to parse entryPayload:", e);
+            }
+        }
+    }
+});
